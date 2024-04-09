@@ -11,8 +11,10 @@ const Chart = ({ symbol }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const incomeStatementResponse = await getQuarterlyData('INCOME_STATEMENT', symbol);
-        const balanceSheetResponse = await getQuarterlyData('BALANCE_SHEET', symbol);
+        let apiKey = process.env.REACT_APP_ALPHA_VANTAGE_API_KEY || "demo";
+        if (data.length === 0) apiKey = "demo";
+        const incomeStatementResponse = await getQuarterlyData('INCOME_STATEMENT', symbol, apiKey);
+        const balanceSheetResponse = await getQuarterlyData('BALANCE_SHEET', symbol, apiKey);
         const combinedData = processData(incomeStatementResponse.data, balanceSheetResponse.data);
         setData(combinedData);
         setLoading(false);
