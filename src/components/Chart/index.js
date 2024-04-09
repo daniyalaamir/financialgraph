@@ -1,15 +1,55 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import ReactApexChart from "react-apexcharts";
 import lineChart from "./config/lineChart";
+import { getQuarterlyData } from "../../api";
 
-const Chart = () => {
-  return (
+const Chart = ({ symbol }) => {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const incomeStatementResponse = await getQuarterlyData('INCOME_STATEMENT', symbol);
+        const balanceSheetResponse = await getQuarterlyData('BALANCE_SHEET', symbol);
+        const combinedData = processData(incomeStatementResponse.data, balanceSheetResponse.data);
+        setData(combinedData);
+        setLoading(false);
+      } catch (error) {
+        setError("Error fetching data: ", error);
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const processData = (incomeStatementData, balanceSheetData) => {
+    return incomeStatementData?.quarterlyReports?.map((incomeReport, index) => ({
+      date: incomeReport.fiscalDateEnding,
+      netIncome: parseFloat(incomeReport.netIncome),
+      totalRevenue: parseFloat(incomeReport.totalRevenue),
+      totalShareholderEquity: parseFloat(balanceSheetData?.quarterlyReports[index].totalShareholderEquity),
+    }));
+  }
+
+  if (loading) return <div>Loading...</div>;
+
+  if (error) return <div>{error}</div>;
+
+  return (!data || data.length === 0) ? (
+    <div>Data not available.</div>
+  ) : (
     <ReactApexChart 
       type="line"
       width="100%"
       height={400}
       options={lineChart.options}
-      series={lineChart.series}
+      series={[
+        { name: 'Net Income', data: data.map(item => [new Date(item.date).getTime(), item.netIncome]) },
+        { name: 'Total Revenue', data: data.map(item => [new Date(item.date).getTime(), item.totalRevenue]) },
+        { name: 'Total Shareholder Equity', data: data.map(item => [new Date(item.date).getTime(), item.totalShareholderEquity]) },
+      ]}
     />
   );
 }
