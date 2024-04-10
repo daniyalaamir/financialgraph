@@ -1,10 +1,13 @@
 import React from "react";
 import Home from "./pages/Home";
+import Layout from "./components/Layout";
 import "antd/dist/antd.css";
 
 function App() {
   return (
-    <Home />
+    <Layout>
+      <Home />
+    </Layout>
   );
 }
 
