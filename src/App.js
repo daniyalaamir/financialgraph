@@ -1,9 +1,10 @@
 import React from "react";
-import Chart from "./components/Chart";
+import Home from "./pages/Home";
+import "antd/dist/antd.css";
 
 function App() {
   return (
-    <Chart symbol={"IBM"} />
+    <Home />
   );
 }
 
