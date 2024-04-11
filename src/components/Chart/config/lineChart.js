@@ -1,72 +1,50 @@
 const lineChart = {
   options: {
     chart: {
-      width: "100%",
-      height: 350,
-      type: "area",
       toolbar: {
-        show: false,
+        show: false
       },
     },
-    legend: {
-      show: false,
-    },
     dataLabels: {
-      enabled: false,
+      enabled: false
     },
     stroke: {
-      curve: "smooth",
+      curve: "smooth"
     },
     yaxis: {
       labels: {
         style: {
           fontSize: "14px",
           fontWeight: 600,
-          colors: ["#8c8c8c"],
+          colors: ["#8c8c8c"]
         },
-      },
+        formatter: function(value) {
+          return (value / 10000000)
+        }
+      }
     },
     xaxis: {
+      type: "datetime",
       labels: {
         style: {
           fontSize: "14px",
           fontWeight: 600,
-          colors: [
-            "#8c8c8c",
-            "#8c8c8c",
-            "#8c8c8c",
-            "#8c8c8c",
-            "#8c8c8c",
-            "#8c8c8c",
-            "#8c8c8c",
-            "#8c8c8c",
-            "#8c8c8c",
-          ],
-        },
-      },
-      categories: [
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-      ],
+          colors: "#8c8c8c"
+        }
+      }
     },
     tooltip: {
+      x: { format: "MMM dd, yyyy" },
       y: {
         formatter: function (val) {
-          return val;
-        },
-      },
+          return "$" + (val / 10000000)
+        }
+      }
     },
     legend: {
-      show: true,
-    },
-  },
-};
+      show: true
+    }
+  }
+}
 
 export default lineChart;

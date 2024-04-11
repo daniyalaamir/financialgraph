@@ -11,7 +11,7 @@ const Chart = ({ symbol }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        let apiKey = process.env.REACT_APP_ALPHA_VANTAGE_API_KEY || "demo";
+        let apiKey = process.env.REACT_APP_ALPHA_VANTAGE_API_KEY;
         if (data.length === 0) apiKey = "demo";
         const incomeStatementResponse = await getQuarterlyData('INCOME_STATEMENT', symbol, apiKey);
         const balanceSheetResponse = await getQuarterlyData('BALANCE_SHEET', symbol, apiKey);
@@ -45,7 +45,7 @@ const Chart = ({ symbol }) => {
     <ReactApexChart 
       type="line"
       width="100%"
-      height={400}
+      height={635}
       options={lineChart.options}
       series={[
         { name: 'Net Income', data: data.map(item => [new Date(item.date).getTime(), item.netIncome]) },
