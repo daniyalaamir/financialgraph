@@ -1,9 +1,8 @@
 import React from "react";
 import { Layout, Drawer } from "antd";
-import Header from "./Header";
 import Sidebar from "./Sidebar";
 
-const { Header: AntHeader, Content, Sider } = Layout;
+const { Content, Sider } = Layout;
 
 function Main({ children }) {
   return (
@@ -36,9 +35,6 @@ function Main({ children }) {
         <Sidebar />
       </Sider>
       <Layout>
-        <AntHeader>
-          <Header />
-        </AntHeader>
         <Content className="content-ant">{children}</Content>
       </Layout>
     </Layout>

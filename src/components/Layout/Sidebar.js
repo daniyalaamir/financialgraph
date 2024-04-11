@@ -6,7 +6,7 @@ function Sidebar() {
   return (
     <React.Fragment>
       <div className="brand">
-        <span>Dashboard</span>
+        <span>Sidebar</span>
       </div>
       <hr />
       <Menu theme="light" mode="inline">

@@ -3,6 +3,8 @@ import ReactApexChart from "react-apexcharts";
 import lineChart from "./config/lineChart";
 import { getQuarterlyData } from "../../api";
 
+let apiKey = process.env.REACT_APP_ALPHA_VANTAGE_API_KEY;
+
 const Chart = ({ symbol }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -10,8 +12,8 @@ const Chart = ({ symbol }) => {
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
-        let apiKey = process.env.REACT_APP_ALPHA_VANTAGE_API_KEY;
         if (data.length === 0) apiKey = "demo";
         const incomeStatementResponse = await getQuarterlyData('INCOME_STATEMENT', symbol, apiKey);
         const balanceSheetResponse = await getQuarterlyData('BALANCE_SHEET', symbol, apiKey);
@@ -19,12 +21,12 @@ const Chart = ({ symbol }) => {
         setData(combinedData);
         setLoading(false);
       } catch (error) {
-        setError("Error fetching data: ", error);
+        setError("Error fetching data: " + error.message);
         setLoading(false);
       }
     };
     fetchData();
-  }, []);
+  }, [symbol]);
 
   const processData = (incomeStatementData, balanceSheetData) => {
     return incomeStatementData?.quarterlyReports?.map((incomeReport, index) => ({

@@ -1,9 +1,16 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Row, Col, Input } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 
-function Header() {
+function Header({ onSearch }) {
+  const [searchTerm, setSearchTerm] = useState("");
+
   useEffect(() => window.scrollTo(0, 0));
+
+  const handleSearch = () => {
+    onSearch(searchTerm);
+  };
+
   return (
     <Row gutter={[24, 0]}>
       <Col span={24} md={6}>
@@ -21,6 +28,9 @@ function Header() {
           className="header-search"
           placeholder="Search symbol..."
           prefix={<SearchOutlined />}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          onPressEnter={handleSearch}
         />
       </Col>
     </Row>
