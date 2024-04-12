@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Row, Col, Input } from "antd";
+import { Row, Col, Input, Button } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 
 function Header({ onSearch }) {
@@ -9,6 +9,11 @@ function Header({ onSearch }) {
 
   const handleSearch = () => {
     onSearch(searchTerm);
+  };
+
+  const handleClear = () => {
+    setSearchTerm("");
+    onSearch("");
   };
 
   return (
@@ -24,14 +29,27 @@ function Header({ onSearch }) {
         </div>
       </Col>
       <Col span={24} md={18} className="header-control">
-        <Input
-          className="header-search"
-          placeholder="Search symbol..."
-          prefix={<SearchOutlined />}
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          onPressEnter={handleSearch}
-        />
+        <Row justify="end" gutter={8} align="middle">
+          <Col>
+            <Input
+              className="header-search"
+              placeholder="Search symbol..."
+              prefix={<SearchOutlined />}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </Col>
+          <Col>
+            <Button onClick={handleSearch} type="primary">
+              Submit
+            </Button>
+          </Col>
+          <Col>
+            <Button onClick={handleClear} type="default">
+              Clear
+            </Button>
+          </Col>
+        </Row>
       </Col>
     </Row>
   );

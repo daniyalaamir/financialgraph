@@ -13,7 +13,7 @@ function App() {
   const [symbol, setSymbol] = useState("IBM");
   
   const handleSearch = searchTerm => {
-    setSymbol(searchTerm);
+    setSymbol(searchTerm || "IBM");
   };
 
   return (

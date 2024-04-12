@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
+import { Card, Alert, Spin } from 'antd';
+import { getQuarterlyData } from "../../api";
 import ReactApexChart from "react-apexcharts";
 import lineChart from "./config/lineChart";
-import { getQuarterlyData } from "../../api";
 
 let apiKey = process.env.REACT_APP_ALPHA_VANTAGE_API_KEY;
 
@@ -14,19 +15,27 @@ const Chart = ({ symbol }) => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        if (data.length === 0) apiKey = "demo";
         const incomeStatementResponse = await getQuarterlyData('INCOME_STATEMENT', symbol, apiKey);
         const balanceSheetResponse = await getQuarterlyData('BALANCE_SHEET', symbol, apiKey);
-        const combinedData = processData(incomeStatementResponse.data, balanceSheetResponse.data);
-        setData(combinedData);
-        setLoading(false);
+        if (incomeStatementResponse.data["Information"] || balanceSheetResponse.data["Information"]) {
+          setError("Invalid symbol. Please search for another symbol.")
+        } else {
+          const combinedData = processData(incomeStatementResponse.data, balanceSheetResponse.data);
+          setData(combinedData);
+          setLoading(false);
+          setError(null)
+        }
       } catch (error) {
-        setError("Error fetching data: " + error.message);
+        setError("Error fetching data: " + error);
         setLoading(false);
       }
     };
     fetchData();
   }, [symbol]);
+
+  useEffect(() => {
+    setLoading(false);
+  }, [error])
 
   const processData = (incomeStatementData, balanceSheetData) => {
     return incomeStatementData?.quarterlyReports?.map((incomeReport, index) => ({
@@ -37,24 +46,30 @@ const Chart = ({ symbol }) => {
     }));
   }
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) {
+    return (
+      <Spin tip="Loading" size="large">
+        <div className="content" />
+      </Spin>
+    )
+  };
 
-  if (error) return <div>{error}</div>;
+  if (error) return <Alert message={error} type="error" showIcon />;
 
-  return (!data || data.length === 0) ? (
-    <div>Data not available.</div>
-  ) : (
-    <ReactApexChart 
-      type="line"
-      width="100%"
-      height={635}
-      options={lineChart.options}
-      series={[
-        { name: 'Net Income', data: data.map(item => [new Date(item.date).getTime(), item.netIncome]) },
-        { name: 'Total Revenue', data: data.map(item => [new Date(item.date).getTime(), item.totalRevenue]) },
-        { name: 'Total Shareholder Equity', data: data.map(item => [new Date(item.date).getTime(), item.totalShareholderEquity]) },
-      ]}
-    />
+  return (
+    <Card bordered={false} className="criclebox h-full">
+      <ReactApexChart 
+        type="line"
+        width="100%"
+        height={635}
+        options={lineChart.options}
+        series={[
+          { name: 'Net Income', data: data.map(item => [new Date(item.date).getTime(), item.netIncome]) },
+          { name: 'Total Revenue', data: data.map(item => [new Date(item.date).getTime(), item.totalRevenue]) },
+          { name: 'Total Shareholder Equity', data: data.map(item => [new Date(item.date).getTime(), item.totalShareholderEquity]) },
+        ]}
+      />
+    </Card>
   );
 }
 
