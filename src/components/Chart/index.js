@@ -4,8 +4,6 @@ import { getQuarterlyData } from "../../api";
 import ReactApexChart from "react-apexcharts";
 import lineChart from "./config/lineChart";
 
-let apiKey = process.env.REACT_APP_ALPHA_VANTAGE_API_KEY;
-
 const Chart = ({ symbol }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -15,16 +13,12 @@ const Chart = ({ symbol }) => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const incomeStatementResponse = await getQuarterlyData('INCOME_STATEMENT', symbol, apiKey);
-        const balanceSheetResponse = await getQuarterlyData('BALANCE_SHEET', symbol, apiKey);
-        if (incomeStatementResponse.data["Information"] || balanceSheetResponse.data["Information"]) {
-          setError("Invalid symbol. Please search for another symbol.")
-        } else {
-          const combinedData = processData(incomeStatementResponse.data, balanceSheetResponse.data);
-          setData(combinedData);
-          setLoading(false);
-          setError(null)
-        }
+        const incomeStatementResponse = await getQuarterlyData('INCOME_STATEMENT', symbol);
+        const balanceSheetResponse = await getQuarterlyData('BALANCE_SHEET', symbol);
+        const combinedData = processData(incomeStatementResponse.data, balanceSheetResponse.data);
+        setData(combinedData);
+        setLoading(false);
+        setError(null)
       } catch (error) {
         setError("Error fetching data: " + error);
         setLoading(false);
@@ -42,7 +36,7 @@ const Chart = ({ symbol }) => {
       date: incomeReport.fiscalDateEnding,
       netIncome: parseFloat(incomeReport.netIncome),
       totalRevenue: parseFloat(incomeReport.totalRevenue),
-      totalShareholderEquity: parseFloat(balanceSheetData?.quarterlyReports[index].totalShareholderEquity),
+      totalShareholderEquity: parseFloat(balanceSheetData?.quarterlyReports[index]?.totalShareholderEquity),
     }));
   }
 
@@ -56,7 +50,9 @@ const Chart = ({ symbol }) => {
 
   if (error) return <Alert message={error} type="error" showIcon />;
 
-  return (
+  return (!data || data.length === 0) ? (
+    <Alert message="Data not available" type="info" showIcon />
+  ) : (
     <Card bordered={false} className="criclebox h-full">
       <ReactApexChart 
         type="line"
