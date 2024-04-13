@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Card, Alert, Spin } from 'antd';
+import { Card, Alert, Spin, Typography } from 'antd';
 import { getQuarterlyData } from "../../api";
 import ReactApexChart from "react-apexcharts";
 import lineChart from "./config/lineChart";
 
 const Chart = ({ symbol }) => {
+  const { Title } = Typography;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [data, setData] = useState([]);
@@ -17,19 +18,15 @@ const Chart = ({ symbol }) => {
         const balanceSheetResponse = await getQuarterlyData('BALANCE_SHEET', symbol);
         const combinedData = processData(incomeStatementResponse.data, balanceSheetResponse.data);
         setData(combinedData);
-        setLoading(false);
-        setError(null)
+        setError(null);
       } catch (error) {
         setError("Error fetching data: " + error);
+      } finally {
         setLoading(false);
       }
     };
     fetchData();
   }, [symbol]);
-
-  useEffect(() => {
-    setLoading(false);
-  }, [error])
 
   const processData = (incomeStatementData, balanceSheetData) => {
     return incomeStatementData?.quarterlyReports?.map((incomeReport, index) => ({
@@ -50,10 +47,15 @@ const Chart = ({ symbol }) => {
 
   if (error) return <Alert message={error} type="error" showIcon />;
 
-  return (!data || data.length === 0) ? (
-    <Alert message="Data not available" type="info" showIcon />
+  return (!data || data.length === 0 || error) ? (
+    <Alert message={error || "Data not available. Please search for another symbol."} type="error" showIcon />
   ) : (
     <Card bordered={false} className="criclebox h-full">
+      <div className="linechart">
+        <div>
+          <Title level={5}>{symbol?.toUpperCase()}</Title>
+        </div>
+      </div>
       <ReactApexChart 
         type="line"
         width="100%"

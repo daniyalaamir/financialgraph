@@ -35,6 +35,7 @@ body {
   font-weight: 600;
 }
 .layout-dashboard .ant-layout-sider.sider-primary .brand span {
+  font-size: 18px;
   vertical-align: middle;
   margin-left: 3px;
 }
@@ -100,4 +101,9 @@ body {
   align-items: center;
   width: 100%;
   height: 100vh;
+}
+.linechart h5 {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0px;
 }
